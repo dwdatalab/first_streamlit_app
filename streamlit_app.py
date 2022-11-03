@@ -1,6 +1,6 @@
 
 import streamlit
-import 
+
 🥣 🥗 🐔 🥑🍞
 streamlit.title("My Parents Healthy Diner")
 streamlit.header(" 🥣 🥗 🐔 Breakfast Menu 🥑🍞")
