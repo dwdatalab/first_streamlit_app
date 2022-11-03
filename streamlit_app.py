@@ -9,5 +9,5 @@ streamlit.text("Kale 🥗 ")
 streamlit.text("Chicken 🐔")
 streamlit.text("Avo and Toast 🥑🍞")
 
-streamlit.header('🍌🥭 Build Your Own Fruit Smoothie 🥝🍇')
+streamlit.header("🍌🥭 Build Your Own Fruit Smoothie 🥝🍇")
 
