@@ -23,7 +23,7 @@ fruits_selected = streamlit.multiselect("Pick some fruits:", list(my_fruit_list.
 fruits_to_show = my_fruit_list.loc[fruits_selected]
 streamlit.dataframe(fruits_to_show)
 
-#create function
+#create function get fruit data
 def get_fruityvice_data(this_fruit_choice):
     fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + this_fruit_choice )
     fruityvice_normalized = pandas.json_normalize(fruityvice_response.json())
@@ -41,20 +41,38 @@ try:
 except URLError as e:
     streamlit.error()
 
-#streamlit.write('The user entered ', fruit_choice)
-
 
 # show response in a dataframe
 
 
-streamlit.stop()
-
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-my_cur.execute("SELECT * FROM fruit_load_list ")
-my_data_rows = my_cur.fetchall()
 streamlit.header("The Fruit Load List Contains:")
-streamlit.dataframe(my_data_rows)
+def get_fruit_load_list():
+    with my_cnx.cursor() AS my_cur
+         my_cur.execute("SELECT * FROM fruit_load_list ")
+         return my_cur.fetchall()
+        
+# Add a button
+if streamlit.button('Get Fruit Load List'):
+    my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+    my_data_rows =  get_fruit_load_list()
+    my_cnx.close()
+    streamlit.dataframe(my_data_rows)
 
-add_my_fruit = streamlit.text_input('What fruit would you like to add?','Marula')
+
+
+#Allow the end user to add to the list
+def insert_row_snowflake(new_fruit):
+    with my_cnx.cursor() AS my_cur:
+         my_cur.execute("INSERT INTO fruit_load_list VALUES ('" + new_fruit + "')")
+         return "Thanks for adding " + new_fruit
+
+add_my_fruit = streamlit.text_input('What fruit would you like to add?')
+if streamlit.button('Add a Fruit to the list'):
+    my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+    back_from_function = insert_row_snowflake(add_my_fruit)
+    my_cnx.close()
+    streamlit.text(back_from_function)
+#streamlit.stop()
+
+
 streamlit.write('Thank you for adding', add_my_fruit, 'to the list!')
